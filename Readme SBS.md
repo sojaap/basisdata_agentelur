@@ -48,9 +48,6 @@ MODIFY id_kategori VARCHAR(10) NOT NULL;
 
 // ini format gambarnya
  ![alt text](/folder/createeditquery.png) 
-
-// ini format gambarnya
- ![alt text](/folder/nama-gambar.png) 
  
  ## Membuat Tabel Arus Kas (`Arus_Kas`)
 ```sql
@@ -66,7 +63,7 @@ CREATE TABLE arus_kas (
 
 ```
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createaruskas.png) 
  
 #### Untuk menampung alur kas dari perusahaan agen, ketika tabel relasi laporan_penjualan_harian dan transaksi_supplier menerima data dummy baru, tabel arus_kas secara otomatis merekam juga data baru tersebut.
 
@@ -78,7 +75,7 @@ DROP COLUMN id_sumber,
 DROP COLUMN tipe_sumber;
 ```
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/nama-gambar.png) 
   
 #### Melakukan penghapusan kolum untuk mengganti fungsi awal id_sumber
 
@@ -112,7 +109,7 @@ ON UPDATE CASCADE; // setelah trigger
 
 ```
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/altertablearuskas.png) 
  
  #### Penambahan query ON DELETE CASCADE bermaksud supaya ketika ada penghapusan data dummy dari tabel asal, data dummy yang tercatat di arus_kas juga turut terhapus.
 
@@ -126,7 +123,7 @@ CREATE TABLE informasi_keuangan(
 
 ```
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createinfokeu.png) 
  
 #### Untuk menampung informasi akumulatif keuangan dari perusahaan agen.
  
@@ -146,7 +143,7 @@ CREATE TABLE transaksi_supplier(
 ```
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createtranssup.png) 
  
 #### Sebagai tabel relasi yang menjadi penghubung antara shifter dan kategori terkait pencatatan pembelian yang terjadi dengan supplier.
 
@@ -164,7 +161,7 @@ REFERENCES kategori(id_kategori);
 
 ```
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/nama-gambar.png) 
  
 #### Guna menghubungkan id_shifter dan id_kategori ke dua tabel entitas, dilakukan Alter Table untuk menghubungkan foreign key ke id_shifter dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
@@ -181,7 +178,7 @@ CREATE TABLE laporan_penjualan_harian(
 ```
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createharian.png) 
 
 #### Guna menjadi penghubung antara shifter dan kategori terkait pencatatan penjualan harian
 
@@ -198,10 +195,10 @@ SET lph.total_penjualan = lph.jumlah_barang_terjual * k.harga_satuan;
 ```
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/lphaddcolumn.png) 
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/updatelph.png) 
  
 ### Untuk melengkapi fungsi tabel, kolom bernama total_penjualan ditambahkan untuk menyatakan total terjual secara nominal. Supaya tidak melakukan perhitungan manual antara total produk terjual dengan harga satuannya. Maka dilakukan UPDATE untuk menghasilkan perhitungan total per-kategori.
 
@@ -220,10 +217,8 @@ REFERENCES kategori(id_kategori);
 ```
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/editfklaporanharian.png) 
 
- // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
  
 #### Menghubungkan foreign key ke id_shifter yang berasal dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
@@ -239,7 +234,7 @@ REFERENCES kategori(id_kategori);
 ```
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createstokmingguan.png) 
 
 #### Menjadi penghubung antara shifter dan kategori terkait pencatatan stok secara mingguan.
 
@@ -249,7 +244,7 @@ ALTER TABLE laporan_stok_mingguan DROP COLUMN tanggal_penjualan;
 
 ```
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/dropcol.png) 
 
 #### Penghapusan atribut guna memperingkas tabel.
 
@@ -267,10 +262,7 @@ REFERENCES kategori(id_kategori);
 
 ```
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
-
-  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/editquerymingguan.png) 
 
 #### Menghubungkan  foreign key ke id_shifter yang berasal dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
