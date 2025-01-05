@@ -5,10 +5,8 @@ Langkah-Langkah Pembuatan Database
 ```sql
 CREATE DATABASE agen_telur;
 ```
-#### Untuk dijadikan sebagai wadah dari data utama yaitu tabel-tabel yang berhubungan dengan operasional bisnis dari agen telur itu.
-
-// ini format gambarnya
  ![alt text](/folder/createdatabase.png) 
+#### Untuk dijadikan sebagai wadah dari data utama yaitu tabel-tabel yang berhubungan dengan operasional bisnis dari agen telur itu.
 
  ## Membuat Tabel Seller (`Seller`)
  ```sql
@@ -18,11 +16,9 @@ CREATE DATABASE agen_telur;
     no_telp VARCHAR(20) NOT NULL
 ) ENGINE=INNODB;
 ```
+ ![alt text](/folder/tableseller.png)
 #### Untuk tempat menampung data nama dan nomor telepon dari shifter atau staff yang bekerja.
-
-// ini format gambarnya
- ![alt text](/folder/tableseller.png) 
-
+ 
 ## Membuat Tabel Kategori (`Kategori`)
 ```sql
 CREATE TABLE kategori (
@@ -31,10 +27,8 @@ CREATE TABLE kategori (
     harga_satuan DECIMAL(10,2) NOT NULL
 )ENGINE=INNODB;
 ```
+![alt text](/folder/createkategori.png) 
 ##### Untuk menampung data mengenai produk-produk yang dijual oleh agen.
-
-// ini format gambarnya
- ![alt text](/folder/createkategori.png) 
 
 ### Edit Query (NOT NULL)
 ``` sql
@@ -62,7 +56,6 @@ CREATE TABLE arus_kas (
 )ENGINE=INNODB;
 
 ```
-// ini format gambarnya
  ![alt text](/folder/createaruskas.png) 
  
 #### Untuk menampung alur kas dari perusahaan agen, ketika tabel relasi laporan_penjualan_harian dan transaksi_supplier menerima data dummy baru, tabel arus_kas secara otomatis merekam juga data baru tersebut.
@@ -86,8 +79,6 @@ ADD COLUMN id_penjualan INT,
 ADD COLUMN id_pembelian INT;
 
 ```
-
-// ini format gambarnya
  ![alt text](/Folder/nama-gambar.png) 
  
 #### Melakukan penambahan kolum untuk mengganti fungsi awal id_sumber yaitu penambahan dua kolom baru bernama id_penjualan dan id_pembelian supaya mengetahui secara jelas transaksi penjualan dan pembelian tersebut merujuk ke ID berapa pada tabel asalnya. 
@@ -108,7 +99,6 @@ ON DELETE CASCADE;
 ON UPDATE CASCADE; // setelah trigger
 
 ```
- // ini format gambarnya
  ![alt text](/folder/altertablearuskas.png) 
  
  #### Penambahan query ON DELETE CASCADE bermaksud supaya ketika ada penghapusan data dummy dari tabel asal, data dummy yang tercatat di arus_kas juga turut terhapus.
@@ -122,9 +112,7 @@ CREATE TABLE informasi_keuangan(
 )ENGINE=INNODB;
 
 ```
- // ini format gambarnya
  ![alt text](/folder/createinfokeu.png) 
- 
 #### Untuk menampung informasi akumulatif keuangan dari perusahaan agen.
  
 
@@ -142,9 +130,7 @@ CREATE TABLE transaksi_supplier(
 
 ```
 
- // ini format gambarnya
- ![alt text](/folder/createtranssup.png) 
- 
+ ![alt text](/folder/createtranssup.png)
 #### Sebagai tabel relasi yang menjadi penghubung antara shifter dan kategori terkait pencatatan pembelian yang terjadi dengan supplier.
 
  ### Edit Query (FK)
@@ -160,7 +146,6 @@ FOREIGN KEY (id_kategori)
 REFERENCES kategori(id_kategori);
 
 ```
- // ini format gambarnya
  ![alt text](/folder/nama-gambar.png) 
  
 #### Guna menghubungkan id_shifter dan id_kategori ke dua tabel entitas, dilakukan Alter Table untuk menghubungkan foreign key ke id_shifter dari tabel seller dan id_kategori yang berasal dari tabel kategori.
@@ -176,10 +161,7 @@ CREATE TABLE laporan_penjualan_harian(
 )ENGINE=INNODB;
 
 ```
-
- // ini format gambarnya
  ![alt text](/folder/createharian.png) 
-
 #### Guna menjadi penghubung antara shifter dan kategori terkait pencatatan penjualan harian
 
 ### Edit Query (UPDATE)
@@ -193,14 +175,11 @@ ON lph.id_kategori = k.id_kategori
 SET lph.total_penjualan = lph.jumlah_barang_terjual * k.harga_satuan;
 
 ```
-
- // ini format gambarnya
  ![alt text](/folder/lphaddcolumn.png) 
 
- // ini format gambarnya
  ![alt text](/folder/updatelph.png) 
  
-### Untuk melengkapi fungsi tabel, kolom bernama total_penjualan ditambahkan untuk menyatakan total terjual secara nominal. Supaya tidak melakukan perhitungan manual antara total produk terjual dengan harga satuannya. Maka dilakukan UPDATE untuk menghasilkan perhitungan total per-kategori.
+#### Untuk melengkapi fungsi tabel, kolom bernama total_penjualan ditambahkan untuk menyatakan total terjual secara nominal. Supaya tidak melakukan perhitungan manual antara total produk terjual dengan harga satuannya. Maka dilakukan UPDATE untuk menghasilkan perhitungan total per-kategori.
 
 ### Edit Query (FK)
 ```sql
@@ -215,8 +194,6 @@ FOREIGN KEY (id_kategori)
 REFERENCES kategori(id_kategori);
 
 ```
-
- // ini format gambarnya
  ![alt text](/folder/editfklaporanharian.png) 
 
  
@@ -232,8 +209,6 @@ REFERENCES kategori(id_kategori);
     tanggal_penjualan DATE NOT NULL DEFAULT CURRENT_DATE
 )ENGINE=INNODB;
 ```
-
- // ini format gambarnya
  ![alt text](/folder/createstokmingguan.png) 
 
 #### Menjadi penghubung antara shifter dan kategori terkait pencatatan stok secara mingguan.
@@ -243,9 +218,7 @@ REFERENCES kategori(id_kategori);
 ALTER TABLE laporan_stok_mingguan DROP COLUMN tanggal_penjualan; 
 
 ```
- // ini format gambarnya
  ![alt text](/folder/dropcol.png) 
-
 #### Penghapusan atribut guna memperingkas tabel.
 
 ### Edit Query (FK)
@@ -261,7 +234,6 @@ FOREIGN KEY (id_kategori)
 REFERENCES kategori(id_kategori);
 
 ```
- // ini format gambarnya
  ![alt text](/folder/editquerymingguan.png) 
 
 #### Menghubungkan  foreign key ke id_shifter yang berasal dari tabel seller dan id_kategori yang berasal dari tabel kategori.
@@ -276,7 +248,6 @@ VALUES
 ('sonia', 'Sonia Debora', '08123456789');
 ```
 
-// ini format gambarnya
  ![alt text](/folder/recordseller.png)
 
  ### b. Pengisian Data Dummy ke Tabel kategori
@@ -303,8 +274,6 @@ VALUES
 (‘mie sedap’, 'Mie Sedap', 2500.00),
 (‘saos’, 'Saos Sambal', 12000.00);
 ```
-
-// ini format gambarnya
  ![alt text](/folder/recordkategori.png)
 
  ### c. Pengisian Data Dummy ke Tabel informasi_keuangan
@@ -313,8 +282,6 @@ INSERT INTO informasi_keuangan (id_info, saldo, tanggal_update)
 VALUES
 (1, 0.00, CURRENT_DATE);
 ```
-
-// ini format gambarnya
  ![alt text](/folder/recordinfokeuangan.png)
 
  ### d. Pengisian Data Dummy ke Tabel laporan_stok_mingguan
@@ -341,8 +308,6 @@ INSERT INTO laporan_stok_mingguan (id_shifter, id_kategori, jumlah_stok) VALUES
 ('kezia', 'merica', 0),
 ('kezia', 'saos', 0);
 ```
-
-// ini format gambarnya
  ![alt text](/folder/recordstokmingguan1.png)
   ![alt text](/folder/recordstokmingguan2.png)
 
@@ -370,8 +335,6 @@ INSERT INTO transaksi_supplier (id_shifter, id_kategori, jumlah_barang_dibeli, t
     ('kezia', 'merica', 30, 15000, 'cash', CURRENT_DATE),
     ('kezia', 'saos', 20, 200000, 'cash', CURRENT_DATE);
 ```
-
-// ini format gambarnya
  ![alt text](/folder/recordtransaksisup1.png)
   ![alt text](/folder/recordtransaksisup2.png)
 
@@ -401,18 +364,14 @@ VALUES
     ('kezia', 'merica', 21, CURRENT_DATE),
     ('kezia', 'saos', 6, CURRENT_DATE);
 ```
-
-// ini format gambarnya
  ![alt text](/folder/recordlaporanharian.png)
 
  ### g. Impact ke Tabel laporan_stok_mingguan
 
-// ini format gambarnya
  ![alt text](/folder/impactstock.png)
 
   ### h. Impact Tabel arus_kas
 
-// ini format gambarnya
  ![alt text](/folder/impactaruskas1.png)
  ![alt text](/folder/impactaruskas2.png)
 
@@ -424,10 +383,102 @@ SELECT SUM(jumlah) as total_pemasukan FROM arus_kas WHERE kategori = ‘pemasuka
 SELECT SUM(jumlah) as total_pengeluaran FROM arus_kas WHERE kategori = ‘pengeluaran’;
 ```
 
-// ini format gambarnya
  ![alt text](/folder/impactinfokeu.png)
 
  ## 6. Pengimplementasian Konsep Transaction dan Trigger
 
- // ini format gambarnya
  ![alt text](/folder/transtrig.png)
+
+
+ # Transaction 
+ ## Procedure dan Transaction Laporan Penjualan Harian (`Laporan_Penjualan_Harian`)
+ ### Delimiter
+ ``` sql 
+DELIMITER $$
+CREATE PROCEDURE proses_penjualan_harian (
+    IN p_id_shifter VARCHAR(10),
+    IN p_id_kategori VARCHAR(10),
+    IN p_jumlah_barang INT,
+    IN p_tanggal DATE
+)
+```
+#### Deklarasi parameter, bisa diibaratkan deklarasi variabel untuk menerima data input ke prosedur proses_penjualan.
+
+### Begin
+
+```sql
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Terjadi kesalahan dalam proses penjualan';
+    END;
+```
+#### Exit handler yang digunakan pada bagian dari query SQL ini berfungsi untuk menangkap error ketika menginput data. Rollback akan membantu membatalkan semua perubahan. Signal SQLstate yang nantinya akan menyampaikan pesan error ke pengguna.
+
+### Start
+``` sql
+START TRANSACTION; 
+    // Transaksi di mulai 
+
+        IF NOT EXISTS (
+            SELECT 1 FROM laporan_stok_mingguan 
+            WHERE id_kategori = p_id_kategori 
+            AND jumlah_stok >= p_jumlah_barang
+        ) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Stok tidak mencukupi';
+        END IF;
+
+```
+
+#### Setelah memulai transaksi, dilakukan pengecekan jumlah_stok dari tabel laporan_stok_mingguan. Jika jumlah_stok lebih kecil dibanding parameter jumlah_barang atau kebutuhan jumlah_barang saat itu, maka akan langsung menyampaikan pesan error.
+
+``` sql 
+  INSERT INTO laporan_penjualan_harian (id_shifter, id_kategori, jumlah_barang_terjual, tanggal_penjualan)
+        VALUES (p_id_shifter, p_id_kategori, p_jumlah_barang, p_tanggal);
+```
+
+#### Jikalau data penjualan terbaru memenuhi syarat jumlah_stok, setelahnya data tersebut dimasukkan ke dalam tabel laporan_penjualan_harian.
+``` sql
+    COMMIT;
+    // Commit menandakan mengakhiri transaksi, dan terjadi penyimpanan secara permanen.
+    END$$
+    DELIMITER ;
+```
+ ## Procedure dan Transaction Transaksi Supplier (`Transakir_Supplier`)
+ ### Pembuatan Prosedur
+``` sql
+CREATE PROCEDURE proses_pembelian_supplier (
+    IN p_id_shifter VARCHAR(10),
+    IN p_id_kategori VARCHAR(10),
+    IN p_jumlah_barang INT,
+    IN p_tipe_transaksi VARCHAR(10),
+    IN p_tanggal DATE
+)
+```
+#### Menggunakan deklarasi parameter untuk menerima data input ke prosedur proses_pembelian_supplier.
+## Begin
+``` sql
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Terjadi kesalahan dalam proses pembelian';
+    END;
+```
+#### Exit handler disini bertugas menangkap error ketika menginput data. Rollback akan membantu membatalkan semua perubahan. Signal SQLstate yang nantinya akan menyampaikan pesan error ke pengguna.
+
+### Start
+
+``` sql
+START TRANSACTION;
+
+        INSERT INTO transaksi_supplier (id_shifter, id_kategori, jumlah_barang_dibeli, tipe_transaksi, tanggal_pembelian)
+        VALUES (p_id_shifter, p_id_kategori, p_jumlah, p_tipe_transaksi, p_tanggal);
+   COMMIT;
+END$$
+DELIMITER ;
+
+```
+####  Jikalau data pembelian dari supplier terbaru memenuhi syarat jumlah_stok, setelahnya data tersebut dapat dimasukkan ke dalam tabel transaksi_supplier.
+
