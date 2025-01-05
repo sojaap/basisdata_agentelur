@@ -68,7 +68,7 @@ DROP COLUMN id_sumber,
 DROP COLUMN tipe_sumber;
 ```
 // ini format gambarnya
- ![alt text](/folder/nama-gambar.png) 
+ ![alt text](/folder/aruskasdropclmn.png) 
   
 #### Melakukan penghapusan kolum untuk mengganti fungsi awal id_sumber
 
@@ -79,7 +79,6 @@ ADD COLUMN id_penjualan INT,
 ADD COLUMN id_pembelian INT;
 
 ```
- ![alt text](/Folder/nama-gambar.png) 
  
 #### Melakukan penambahan kolum untuk mengganti fungsi awal id_sumber yaitu penambahan dua kolom baru bernama id_penjualan dan id_pembelian supaya mengetahui secara jelas transaksi penjualan dan pembelian tersebut merujuk ke ID berapa pada tabel asalnya. 
  
@@ -146,7 +145,6 @@ FOREIGN KEY (id_kategori)
 REFERENCES kategori(id_kategori);
 
 ```
- ![alt text](/folder/nama-gambar.png) 
  
 #### Guna menghubungkan id_shifter dan id_kategori ke dua tabel entitas, dilakukan Alter Table untuk menghubungkan foreign key ke id_shifter dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
