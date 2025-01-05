@@ -4,7 +4,7 @@
 CREATE DATABASE agen_telur;
 ```
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createdatabase.png) 
 
  ## Membuat Tabel Seller (`Seller`)
  ```sql
