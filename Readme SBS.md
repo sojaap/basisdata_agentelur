@@ -8,7 +8,7 @@ CREATE DATABASE agen_telur;
 #### Untuk dijadikan sebagai wadah dari data utama yaitu tabel-tabel yang berhubungan dengan operasional bisnis dari agen telur itu.
 
 // ini format gambarnya
- ![alt text](/Folder/createdatabase.png) 
+ ![alt text](/folder/createdatabase.png) 
 
  ## Membuat Tabel Seller (`Seller`)
  ```sql
@@ -21,7 +21,7 @@ CREATE DATABASE agen_telur;
 #### Untuk tempat menampung data nama dan nomor telepon dari shifter atau staff yang bekerja.
 
 // ini format gambarnya
- ![alt text](/Folder/tableseller.png) 
+ ![alt text](/folder/tableseller.png) 
 
 ## Membuat Tabel Kategori (`Kategori`)
 ```sql
@@ -34,7 +34,7 @@ CREATE TABLE kategori (
 ##### Untuk menampung data mengenai produk-produk yang dijual oleh agen.
 
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createkategori.png) 
 
 ### Edit Query (NOT NULL)
 ``` sql
@@ -47,10 +47,10 @@ MODIFY id_kategori VARCHAR(10) NOT NULL;
 #### Terdapat aksi edit query dalam tabel ini karena penambahan NOT NULL ke dalam PRIMARY KEY (PK) masing-masing tabel. 
 
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createeditquery.png) 
 
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/nama-gambar.png) 
  
  ## Membuat Tabel Arus Kas (`Arus_Kas`)
 ```sql
@@ -68,7 +68,7 @@ CREATE TABLE arus_kas (
 #### Untuk menampung alur kas dari perusahaan agen, ketika tabel relasi laporan_penjualan_harian dan transaksi_supplier menerima data dummy baru, tabel arus_kas secara otomatis merekam juga data baru tersebut.
 
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createaruskas.png) 
 
  ## Edit Query (DROP/DELETE)
 ```sql
@@ -77,7 +77,7 @@ DROP COLUMN id_sumber,
 DROP COLUMN tipe_sumber;
 ```
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/nama-gambar.png) 
   
 #### Melakukan penghapusan kolum untuk mengganti fungsi awal id_sumber
 
@@ -91,7 +91,7 @@ ADD COLUMN id_pembelian INT;
 #### Melakukan penambahan kolum untuk mengganti fungsi awal id_sumber yaitu penambahan dua kolom baru bernama id_penjualan dan id_pembelian supaya mengetahui secara jelas transaksi penjualan dan pembelian tersebut merujuk ke ID berapa pada tabel asalnya. 
 
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/nama-gambar.png) 
  
 ### Edit Query (FK)
 ```sql
@@ -112,7 +112,7 @@ ON UPDATE CASCADE; // setelah trigger
  #### Penambahan query ON DELETE CASCADE bermaksud supaya ketika ada penghapusan data dummy dari tabel asal, data dummy yang tercatat di arus_kas juga turut terhapus.
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/nama-gambar.png) 
 
  ## Membuat Tabel Informasi Keuangan (`Informasi_Keuangan`)
 ```sql
@@ -126,7 +126,7 @@ CREATE TABLE informasi_keuangan(
 #### Untuk menampung informasi akumulatif keuangan dari perusahaan agen.
  
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createinfokeu.png) 
 
  ## Membuat Tabel Relasi Transaksi_Supplier (`Transaksi_Supplier`)
 ```sql
@@ -144,7 +144,7 @@ CREATE TABLE transaksi_supplier(
 #### Sebagai tabel relasi yang menjadi penghubung antara shifter dan kategori terkait pencatatan pembelian yang terjadi dengan supplier.
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/createtranssup.png) 
 
  ### Edit Query (FK)
 ```sql
@@ -162,7 +162,7 @@ REFERENCES kategori(id_kategori);
 #### Guna menghubungkan id_shifter dan id_kategori ke dua tabel entitas, dilakukan Alter Table untuk menghubungkan foreign key ke id_shifter dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
  // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/nama-gambar.png) 
 
 
 ## 5. Pengisian Data Dummy ke dalam Setiap Tabel
