@@ -383,6 +383,260 @@ SELECT SUM(jumlah) as total_pengeluaran FROM arus_kas WHERE kategori = ‘pengel
 
  ![alt text](/folder/impactinfokeu.png)
 
- ## 6. Pengimplementasian Konsep Transaction dan Trigger
+ ## 6. Trigger
 
- ![alt text](/folder/transtrig.png)
+ ### a. Trigger arus kas
+
+ #### Trigger yang dibuat untuk tabel arus_kas adalah “after_arus_kas_delete”, di mana trigger ini bekerja supaya ketika tabel arus_kas melakukan DELETE di salah satu data dummy, pengurangan data tersebut mempengaruhi pula isi tabel informasi_keuangan.
+
+ ```sql
+DELIMITER $$
+
+CREATE TRIGGER after_arus_kas_delete
+AFTER DELETE ON arus_kas
+FOR EACH ROW
+BEGIN
+    UPDATE informasi_keuangan
+    SET 
+        saldo = (
+            SELECT 
+                COALESCE(
+                    (SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pemasukan'),
+                    0
+                ) - 
+                COALESCE(
+                    (SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pengeluaran'),
+                    0
+                )
+        ),
+        tanggal_update = CURRENT_DATE
+    WHERE id_info = 1;
+END$$
+```
+
+#### Trigger arus_kas menggunakan fungsi COALESCE untuk menangani kasus ketika tidak ada data di tabel arus_kas. Jadi, andaikan ketika kategori = ‘pemasukan’ atau ‘pengeluaran’ benar-benar tidak ada data yang masuk sama sekali, maka akan mengembalikan nilai NULL.
+
+### b. Trigger laporan_penjualan_harian
+
+####  Trigger-trigger di bawah ini berfungsi untuk update laporan_penjualan_harian setelah melakukan penjualan. Trigger dibuat dengan maksud memengaruhi tabel transaksi_supplier, laporan_stok_mingguan dan informasi_keuangan dalam pencatatannya.
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER stok_sebelum_penjualan
+BEFORE INSERT ON laporan_penjualan_harian
+FOR EACH ROW
+BEGIN
+    DECLARE stok_tersedia INT;
+   
+    SELECT jumlah_stok INTO stok_tersedia
+    FROM laporan_stok_mingguan
+    WHERE id_kategori = NEW.id_kategori;
+   
+    IF stok_tersedia < NEW.jumlah_barang_terjual THEN
+    	SIGNAL SQLSTATE '45000'
+    	SET MESSAGE_TEXT = 'Stok tidak cukup!';
+    END IF;
+END$$
+```
+
+####  Trigger di atas berfungsi untuk konfirmasi stok. Jadi ketika jumlah permintaan barang lebih besar dari jumlah stok, maka SQL akan mengirimkan pesan “Stok tidak cukup!”. 
+
+```sql
+DELIMITER $$
+CREATE TRIGGER `before_insert_penjualan` 
+BEFORE INSERT ON `laporan_penjualan_harian` 
+FOR EACH ROW BEGIN
+    DECLARE harga DECIMAL(10,2);
+    DECLARE total_stok INT;
+    
+    SELECT harga_satuan INTO harga
+    FROM kategori
+    WHERE id_kategori = NEW.id_kategori;
+    
+    SELECT COALESCE(SUM(jumlah_stok), 0) INTO total_stok
+    FROM laporan_stok_mingguan
+    WHERE id_kategori = NEW.id_kategori;
+    
+    IF total_stok < NEW.jumlah_barang_terjual THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Stok tidak cukup!';
+    END IF;
+    
+    SET NEW.total_penjualan = NEW.jumlah_barang_terjual * harga;
+END $$
+
+DELIMITER ;
+```
+
+####  Trigger di atas berfungsi untuk persiapan sebelum penjualan dilakukan. Tujuan dari trigger tersebut adalah untuk menghitung otomatis jumlah barang terjual dengan harga satuan per kategorinya.
+
+```sql
+DELIMITER $$
+CREATE TRIGGER setelah_input_penjualan_ke_arus_kas
+AFTER INSERT ON laporan_penjualan_harian
+FOR EACH ROW
+BEGIN
+
+    INSERT INTO arus_kas (tanggal, kategori, jumlah, id_penjualan, keterangan)
+    VALUES (
+        	NEW.tanggal_penjualan,
+        	'pemasukan',
+        	NEW.total_penjualan,
+        	NEW.id_penjualan,
+        	CONCAT('Penjualan oleh ', NEW.id_shifter, ' - Kategori: ', NEW.id_kategori)
+    );
+  
+	UPDATE informasi_keuangan
+	SET
+    	saldo = (
+        	SELECT (
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pemasukan'), 0) -
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pengeluaran'), 0));
+    	tanggal_update = CURRENT_DATE
+	WHERE id_info = 1;
+END$$
+ 
+saldo + NEW.total_penjualan,
+        	tanggal_update = CURRENT_DATE
+    WHERE id_info = 1;
+  
+    UPDATE laporan_stok_mingguan
+    SET jumlah_stok = jumlah_stok - NEW.jumlah_barang_terjual
+    WHERE id_kategori = NEW.id_kategori;
+END$$
+
+DELIMITER ;
+```
+
+#### Trigger di atas adalah untuk melakukan UPDATE ke tabel arus_kas yang di mana langsung memasukan data baru ke tabelnya, informasi_keuangan yang di mana langsung melakukan pembaruan akumulasi saldo, dan laporan_stok_mingguan yang di mana langsung mengonfirmasi jumlah stok tersisa setelah penjualan.
+
+```sql
+DELIMITER $$ 
+CREATE TRIGGER setelah_hapus_penjualan
+AFTER DELETE ON laporan_penjualan_harian
+FOR EACH ROW
+BEGIN
+
+    UPDATE laporan_stok_mingguan
+SET jumlah_stok = jumlah_stok + OLD.jumlah_barang_terjual
+WHERE id_kategori = OLD.id_kategori;
+ 
+    UPDATE informasi_keuangan
+SET
+    	saldo = (
+        	SELECT (
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pemasukan'), 0) -
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pengeluaran'), 0))),
+    	tanggal_update = CURRENT_DATE
+     WHERE id_info = 1;
+END$$
+ 
+DELIMITER ;
+```
+
+####  Trigger di atas berfungsi ketika penjualan dibatalkan. Di mana jumlah_stok dari laporan_stok_mingguan mengalami UPDATE kembali ke jumlah sediakala. Pada bagian informasi_keuangan cukup terjadi pengulangan trigger saja untuk menyesuaikan data di arus_kas.
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER setelah_input_pembelian_ke_arus_kas
+AFTER INSERT ON transaksi_supplier
+FOR EACH ROW
+BEGIN
+   
+    INSERT INTO arus_kas (tanggal, kategori, jumlah, keterangan)
+    VALUES (
+    	NEW.tanggal_pembelian,
+    	'pengeluaran',
+    	NEW.total_transaksi,
+    	CONCAT('Pembelian oleh ', NEW.id_shifter, ' - Kategori: ', NEW.id_kategori)
+    );
+
+    UPDATE informasi_keuangan
+	SET
+    	saldo = (
+        	SELECT (
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pemasukan'), 0) -
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pengeluaran'), 0))),
+    	tanggal_update = CURRENT_DATE
+	WHERE id_info = 1;
+    
+IF EXISTS (
+SELECT 1 FROM laporan_stok_mingguan
+WHERE id_kategori = NEW.id_kategori )
+THEN
+    UPDATE laporan_stok_mingguan
+    SET jumlah_stok = jumlah_stok + NEW.jumlah_barang_dibeli
+    WHERE id_kategori = NEW.id_kategori;
+ELSE
+    INSERT INTO laporan_stok_mingguan (id_shifter, id_kategori, jumlah_stok)
+VALUES (NEW.id_shifter,NEW. id_kategori, NEW.jumlah_barang_dibeli );
+END IF;
+END$$
+
+DELIMITER ;
+```
+
+####   Trigger di atas berfungsi setelah melakukan pembelian dengan supplier. Tabel yang berpengaruh adalah tabel arus_kas, informasi_keuangan dan laporan_stok_mingguan.
+
+### c. Trigger transaksi_supplier
+
+#### Trigger-trigger di bawah ini berfungsi untuk melakukan UPDATE setelah melakukan pembelian. Trigger dibuat dengan maksud memengaruhi tabel laporan_stok_mingguan, arus_kas dan informasi_keuangan dalam pencatatannya.
+
+```sql
+CREATE TRIGGER update_setelah_transaksi_supplier
+AFTER UPDATE ON transaksi_supplier
+FOR EACH ROW
+BEGIN
+
+UPDATE laporan_stok_mingguan
+SET jumlah_stok = jumlah_stok - OLD.jumlah_barang_dibeli + NEW.jumlah_barang_dibeli
+WHERE id_kategori = NEW.id_kategori;
+
+UPDATE arus_kas
+SET
+    	jumlah = NEW.total_transaksi,
+    	tanggal = NEW.tanggal_pembelian,
+    	keterangan = CONCAT('Update pembelian oleh ', NEW.id_shifter, ' - Kategori: ', NEW.id_kategori)
+WHERE id_pembelian = NEW.id_transaksi;
+ 
+UPDATE informasi_keuangan
+SET
+    	saldo = (
+        	SELECT (
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pemasukan'), 0) -
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pengeluaran'), 0)),
+tanggal_update = CURRENT_DATE
+     WHERE id_info = 1;
+END$$
+
+DELIMITER ;
+```
+
+#### Trigger di atas berfungsi untuk melakukan UPDATE setelah melakukan pembelian. Trigger dibuat dengan maksud memengaruhi tabel laporan_stok_mingguan dalam pembaruan jumlah_stok, arus_kas dalam pembaruan catatan datanya, dan informasi_keuangan dalam pembaruan saldonya.
+
+```sql
+CREATE TRIGGER setelah_hapus_pembelian
+AFTER DELETE ON transaksi_supplier
+FOR EACH ROW
+BEGIN
+
+UPDATE laporan_stok_mingguan
+SET jumlah_stok = jumlah_stok - OLD.jumlah_barang_dibeli
+WHERE id_kategori = OLD.id_kategori;
+ 
+UPDATE informasi_keuangan
+SET
+        saldo = (
+        	SELECT
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pemasukan'), 0) -
+            	COALESCE((SELECT SUM(jumlah) FROM arus_kas WHERE kategori = 'pengeluaran'), 0)),
+        tanggal_update = CURRENT_DATE
+    WHERE id_info = 1;
+END$$
+
+DELIMITER ;
+```
+
+####   Trigger di atas adalah sebagai pelengkap, karena pada trigger sebelumnya kurang tanggap ketika salah satu data pembelian dihapus atau dibatalkan. Pada trigger tersebut, akan terjadi pembaruan di mana jumlah_stok dari laporan_stok_mingguan mengalami UPDATE kembali ke jumlah sediakala.
