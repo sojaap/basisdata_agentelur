@@ -65,19 +65,20 @@ CREATE TABLE arus_kas (
 )ENGINE=INNODB;
 
 ```
+// ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+ 
 #### Untuk menampung alur kas dari perusahaan agen, ketika tabel relasi laporan_penjualan_harian dan transaksi_supplier menerima data dummy baru, tabel arus_kas secara otomatis merekam juga data baru tersebut.
 
-// ini format gambarnya
- ![alt text](/folder/createaruskas.png) 
 
- ## Edit Query (DROP/DELETE)
+ ### Edit Query (DROP/DELETE)
 ```sql
 ALTER TABLE arus_kas
 DROP COLUMN id_sumber,
 DROP COLUMN tipe_sumber;
 ```
 // ini format gambarnya
- ![alt text](/folder/nama-gambar.png) 
+ ![alt text](/Folder/nama-gambar.png) 
   
 #### Melakukan penghapusan kolum untuk mengganti fungsi awal id_sumber
 
@@ -88,10 +89,11 @@ ADD COLUMN id_penjualan INT,
 ADD COLUMN id_pembelian INT;
 
 ```
-#### Melakukan penambahan kolum untuk mengganti fungsi awal id_sumber yaitu penambahan dua kolom baru bernama id_penjualan dan id_pembelian supaya mengetahui secara jelas transaksi penjualan dan pembelian tersebut merujuk ke ID berapa pada tabel asalnya. 
 
 // ini format gambarnya
- ![alt text](/folder/nama-gambar.png) 
+ ![alt text](/Folder/nama-gambar.png) 
+ 
+#### Melakukan penambahan kolum untuk mengganti fungsi awal id_sumber yaitu penambahan dua kolom baru bernama id_penjualan dan id_pembelian supaya mengetahui secara jelas transaksi penjualan dan pembelian tersebut merujuk ke ID berapa pada tabel asalnya. 
  
 ### Edit Query (FK)
 ```sql
@@ -109,10 +111,10 @@ ON DELETE CASCADE;
 ON UPDATE CASCADE; // setelah trigger
 
 ```
- #### Penambahan query ON DELETE CASCADE bermaksud supaya ketika ada penghapusan data dummy dari tabel asal, data dummy yang tercatat di arus_kas juga turut terhapus.
-
  // ini format gambarnya
- ![alt text](/folder/nama-gambar.png) 
+ ![alt text](/Folder/nama-gambar.png) 
+ 
+ #### Penambahan query ON DELETE CASCADE bermaksud supaya ketika ada penghapusan data dummy dari tabel asal, data dummy yang tercatat di arus_kas juga turut terhapus.
 
  ## Membuat Tabel Informasi Keuangan (`Informasi_Keuangan`)
 ```sql
@@ -123,10 +125,11 @@ CREATE TABLE informasi_keuangan(
 )ENGINE=INNODB;
 
 ```
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+ 
 #### Untuk menampung informasi akumulatif keuangan dari perusahaan agen.
  
- // ini format gambarnya
- ![alt text](/folder/createinfokeu.png) 
 
  ## Membuat Tabel Relasi Transaksi_Supplier (`Transaksi_Supplier`)
 ```sql
@@ -141,10 +144,11 @@ CREATE TABLE transaksi_supplier(
 )ENGINE=INNODB;
 
 ```
-#### Sebagai tabel relasi yang menjadi penghubung antara shifter dan kategori terkait pencatatan pembelian yang terjadi dengan supplier.
 
  // ini format gambarnya
- ![alt text](/folder/createtranssup.png) 
+ ![alt text](/Folder/nama-gambar.png) 
+ 
+#### Sebagai tabel relasi yang menjadi penghubung antara shifter dan kategori terkait pencatatan pembelian yang terjadi dengan supplier.
 
  ### Edit Query (FK)
 ```sql
@@ -159,13 +163,118 @@ FOREIGN KEY (id_kategori)
 REFERENCES kategori(id_kategori);
 
 ```
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+ 
 #### Guna menghubungkan id_shifter dan id_kategori ke dua tabel entitas, dilakukan Alter Table untuk menghubungkan foreign key ke id_shifter dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
+## Membuat Tabel Relasi Laporan Penjualan Harian (`Laporan_Penjualan_Harian`)
+```sql
+CREATE TABLE laporan_penjualan_harian(
+    id_penjualan INT AUTO_INCREMENT PRIMARY KEY,
+    id_shifter VARCHAR(10) NOT NULL,
+    id_kategori VARCHAR(10) NOT NULL,
+    jumlah_barang_terjual INT,
+    tanggal_penjualan DATE NOT NULL DEFAULT CURRENT_DATE
+)ENGINE=INNODB;
+
+```
+
  // ini format gambarnya
- ![alt text](/folder/nama-gambar.png) 
+ ![alt text](/Folder/nama-gambar.png) 
 
+#### Guna menjadi penghubung antara shifter dan kategori terkait pencatatan penjualan harian
 
-## 5. Pengisian Data Dummy ke dalam Setiap Tabel
+### Edit Query (UPDATE)
+```sql
+ALTER TABLE laporan_penjualan_harian
+ADD COLUMN total_penjualan DECIMAL(10, 2);
+
+UPDATE laporan_penjualan_harian lph
+JOIN kategori k
+ON lph.id_kategori = k.id_kategori
+SET lph.total_penjualan = lph.jumlah_barang_terjual * k.harga_satuan;
+
+```
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+ 
+### Untuk melengkapi fungsi tabel, kolom bernama total_penjualan ditambahkan untuk menyatakan total terjual secara nominal. Supaya tidak melakukan perhitungan manual antara total produk terjual dengan harga satuannya. Maka dilakukan UPDATE untuk menghasilkan perhitungan total per-kategori.
+
+### Edit Query (FK)
+```sql
+ALTER TABLE laporan_penjualan_harian
+ADD CONSTRAINT fk_id_dari_shifter
+FOREIGN KEY (id_shifter)
+REFERENCES seller(id_shifter);
+
+ALTER TABLE laporan_penjualan_harian
+ADD CONSTRAINT fk_id_dari_kategori
+FOREIGN KEY (id_kategori)
+REFERENCES kategori(id_kategori);
+
+```
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+ 
+#### Menghubungkan foreign key ke id_shifter yang berasal dari tabel seller dan id_kategori yang berasal dari tabel kategori.
+
+## Membuat Tabel Relasi Laporan Stok Mingguan (`Laporan_Stok_Mingguan`)
+```sql
+ CREATE TABLE laporan_stok_mingguan(
+    id_lapstok INT AUTO_INCREMENT PRIMARY KEY,
+    id_shifter VARCHAR(10) NOT NULL,
+    id_kategori VARCHAR(10) NOT NULL,
+    jumlah_stok INT,
+    tanggal_penjualan DATE NOT NULL DEFAULT CURRENT_DATE
+)ENGINE=INNODB;
+```
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+#### Menjadi penghubung antara shifter dan kategori terkait pencatatan stok secara mingguan.
+
+### Edit Query (DROP COL)
+``` sql
+ALTER TABLE laporan_stok_mingguan DROP COLUMN tanggal_penjualan; 
+
+```
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+#### Penghapusan atribut guna memperingkas tabel.
+
+### Edit Query (FK)
+``` sql
+ALTER TABLE laporan_stok_mingguan
+ADD CONSTRAINT fk_id_asal_shifter
+FOREIGN KEY (id_shifter)
+REFERENCES seller(id_shifter);
+
+ALTER TABLE laporan_stok_mingguan
+ADD CONSTRAINT fk_id_asal_kategori
+FOREIGN KEY (id_kategori)
+REFERENCES kategori(id_kategori);
+
+```
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+  // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+#### Menghubungkan  foreign key ke id_shifter yang berasal dari tabel seller dan id_kategori yang berasal dari tabel kategori.
+
+# Pengisian Data Dummy ke dalam Setiap Tabel
 ### a. Pengisian Data Dummy ke Tabel seller
 ```sql
 INSERT INTO seller (id_shifter, nama_shifter, no_telp) 
