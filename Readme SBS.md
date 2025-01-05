@@ -1,14 +1,14 @@
 # Step by step
 Langkah-Langkah Pembuatan Database
 
-## Membuat Database Agen Telur (`DB`)
+## 1. Membuat Database Agen Telur (`DB`)
 ```sql
 CREATE DATABASE agen_telur;
 ```
  ![alt text](/folder/createdatabase.png) 
 #### Untuk dijadikan sebagai wadah dari data utama yaitu tabel-tabel yang berhubungan dengan operasional bisnis dari agen telur itu.
 
- ## Membuat Tabel Seller (`Seller`)
+ ## 2. Membuat Tabel Seller (`Seller`)
  ```sql
  CREATE TABLE seller (
     id_shifter VARCHAR(10) PRIMARY KEY,
@@ -19,7 +19,7 @@ CREATE DATABASE agen_telur;
  ![alt text](/folder/tableseller.png)
 #### Untuk tempat menampung data nama dan nomor telepon dari shifter atau staff yang bekerja.
  
-## Membuat Tabel Kategori (`Kategori`)
+## 3. Membuat Tabel Kategori (`Kategori`)
 ```sql
 CREATE TABLE kategori (
     id_kategori varchar(10) PRIMARY KEY,
@@ -43,7 +43,7 @@ MODIFY id_kategori VARCHAR(10) NOT NULL;
 // ini format gambarnya
  ![alt text](/folder/createeditquery.png) 
  
- ## Membuat Tabel Arus Kas (`Arus_Kas`)
+ ## 4. Membuat Tabel Arus Kas (`Arus_Kas`)
 ```sql
 CREATE TABLE arus_kas (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -102,7 +102,7 @@ ON UPDATE CASCADE; // setelah trigger
  
  #### Penambahan query ON DELETE CASCADE bermaksud supaya ketika ada penghapusan data dummy dari tabel asal, data dummy yang tercatat di arus_kas juga turut terhapus.
 
- ## Membuat Tabel Informasi Keuangan (`Informasi_Keuangan`)
+ ## 5. Membuat Tabel Informasi Keuangan (`Informasi_Keuangan`)
 ```sql
 CREATE TABLE informasi_keuangan(
     id_info INT PRIMARY KEY,
@@ -115,7 +115,7 @@ CREATE TABLE informasi_keuangan(
 #### Untuk menampung informasi akumulatif keuangan dari perusahaan agen.
  
 
- ## Membuat Tabel Relasi Transaksi_Supplier (`Transaksi_Supplier`)
+ ## 6. Membuat Tabel Relasi Transaksi_Supplier (`Transaksi_Supplier`)
 ```sql
 CREATE TABLE transaksi_supplier(
     id_transaksi INT AUTO_INCREMENT PRIMARY KEY,
@@ -148,7 +148,7 @@ REFERENCES kategori(id_kategori);
  
 #### Guna menghubungkan id_shifter dan id_kategori ke dua tabel entitas, dilakukan Alter Table untuk menghubungkan foreign key ke id_shifter dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
-## Membuat Tabel Relasi Laporan Penjualan Harian (`Laporan_Penjualan_Harian`)
+## 7. Membuat Tabel Relasi Laporan Penjualan Harian (`Laporan_Penjualan_Harian`)
 ```sql
 CREATE TABLE laporan_penjualan_harian(
     id_penjualan INT AUTO_INCREMENT PRIMARY KEY,
@@ -197,7 +197,7 @@ REFERENCES kategori(id_kategori);
  
 #### Menghubungkan foreign key ke id_shifter yang berasal dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
-## Membuat Tabel Relasi Laporan Stok Mingguan (`Laporan_Stok_Mingguan`)
+## 8. Membuat Tabel Relasi Laporan Stok Mingguan (`Laporan_Stok_Mingguan`)
 ```sql
  CREATE TABLE laporan_stok_mingguan(
     id_lapstok INT AUTO_INCREMENT PRIMARY KEY,
@@ -236,7 +236,7 @@ REFERENCES kategori(id_kategori);
 
 #### Menghubungkan  foreign key ke id_shifter yang berasal dari tabel seller dan id_kategori yang berasal dari tabel kategori.
 
-# Pengisian Data Dummy ke dalam Setiap Tabel
+## 9. Pengisian Data Dummy ke dalam Setiap Tabel
 ### a. Pengisian Data Dummy ke Tabel seller
 ```sql
 INSERT INTO seller (id_shifter, nama_shifter, no_telp) 
@@ -383,7 +383,7 @@ SELECT SUM(jumlah) as total_pengeluaran FROM arus_kas WHERE kategori = ‘pengel
 
  ![alt text](/folder/impactinfokeu.png)
 
- ## 6. Trigger
+ ## 10. Trigger
 
  ### a. Trigger arus kas
 
