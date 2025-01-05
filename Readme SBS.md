@@ -8,7 +8,7 @@ CREATE DATABASE agen_telur;
 #### Untuk dijadikan sebagai wadah dari data utama yaitu tabel-tabel yang berhubungan dengan operasional bisnis dari agen telur itu.
 
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/Folder/createdatabase.png) 
 
  ## Membuat Tabel Seller (`Seller`)
  ```sql
@@ -21,7 +21,7 @@ CREATE DATABASE agen_telur;
 #### Untuk tempat menampung data nama dan nomor telepon dari shifter atau staff yang bekerja.
 
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/Folder/tableseller.png) 
 
 ## Membuat Tabel Kategori (`Kategori`)
 ```sql
