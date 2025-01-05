@@ -15,4 +15,4 @@ CREATE DATABASE agen_telur;
 ) ENGINE=INNODB;
 ```
 // ini format gambarnya
- ![alt text](/Folder/nama-gambar.png) 
+ ![alt text](/folder/tableseller.png) 
