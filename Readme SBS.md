@@ -242,7 +242,8 @@ INSERT INTO laporan_stok_mingguan (id_shifter, id_kategori, jumlah_stok) VALUES
 ```
 
 // ini format gambarnya
- ![alt text](/folder/recordstokmingguan.png)
+ ![alt text](/folder/recordstokmingguan1.png)
+  ![alt text](/folder/recordstokmingguan2.png)
 
  ### e. Pengisian Data Dummy ke Tabel transaksi_supplier
 ```sql
@@ -270,7 +271,8 @@ INSERT INTO transaksi_supplier (id_shifter, id_kategori, jumlah_barang_dibeli, t
 ```
 
 // ini format gambarnya
- ![alt text](/folder/recordtransaksisup.png)
+ ![alt text](/folder/recordtransaksisup1.png)
+  ![alt text](/folder/recordtransaksisup2.png)
 
  ### f. Pengisian Data Dummy ke Tabel laporan_penjualan_harian
 ```sql
