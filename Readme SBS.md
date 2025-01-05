@@ -1,10 +1,14 @@
 # Step by step
+Langkah-Langkah Pembuatan Database
+
 ## Membuat Database Agen Telur (`DB`)
 ```sql
 CREATE DATABASE agen_telur;
 ```
+#### Untuk dijadikan sebagai wadah dari data utama yaitu tabel-tabel yang berhubungan dengan operasional bisnis dari agen telur itu.
+
 // ini format gambarnya
- ![alt text](/folder/createdatabase.png) 
+ ![alt text](/Folder/nama-gambar.png) 
 
  ## Membuat Tabel Seller (`Seller`)
  ```sql
@@ -14,8 +18,152 @@ CREATE DATABASE agen_telur;
     no_telp VARCHAR(20) NOT NULL
 ) ENGINE=INNODB;
 ```
+#### Untuk tempat menampung data nama dan nomor telepon dari shifter atau staff yang bekerja.
+
 // ini format gambarnya
- ![alt text](/folder/tableseller.png) 
+ ![alt text](/Folder/nama-gambar.png) 
+
+## Membuat Tabel Kategori (`Kategori`)
+```sql
+CREATE TABLE kategori (
+    id_kategori varchar(10) PRIMARY KEY,
+    nama_kategori varchar(30) NOT NULL,
+    harga_satuan DECIMAL(10,2) NOT NULL
+)ENGINE=INNODB;
+```
+##### Untuk menampung data mengenai produk-produk yang dijual oleh agen.
+
+// ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+### Edit Query (NOT NULL)
+``` sql
+ALTER TABLE seller
+MODIFY id_shifter VARCHAR(10) NOT NULL;
+
+ALTER TABLE kategori
+MODIFY id_kategori VARCHAR(10) NOT NULL;
+```
+#### Terdapat aksi edit query dalam tabel ini karena penambahan NOT NULL ke dalam PRIMARY KEY (PK) masing-masing tabel. 
+
+// ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+// ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+ 
+ ## Membuat Tabel Arus Kas (`Arus_Kas`)
+```sql
+CREATE TABLE arus_kas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tanggal DATE NOT NULL DEFAULT CURRENT_DATE,
+    kategori ENUM('pemasukan', 'pengeluaran') NOT NULL,
+    jumlah DECIMAL(10, 2) NOT NULL,
+    id_sumber INT,
+    tipe_sumber ENUM ('penjualan', 'pembelian') NOT NULL,
+    keterangan VARCHAR(250)
+)ENGINE=INNODB;
+
+```
+#### Untuk menampung alur kas dari perusahaan agen, ketika tabel relasi laporan_penjualan_harian dan transaksi_supplier menerima data dummy baru, tabel arus_kas secara otomatis merekam juga data baru tersebut.
+
+// ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+ ## Edit Query (DROP/DELETE)
+```sql
+ALTER TABLE arus_kas
+DROP COLUMN id_sumber,
+DROP COLUMN tipe_sumber;
+```
+// ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+  
+#### Melakukan penghapusan kolum untuk mengganti fungsi awal id_sumber
+
+### Edit Query (ADD)
+```sql
+ALTER TABLE arus_kas
+ADD COLUMN id_penjualan INT,
+ADD COLUMN id_pembelian INT;
+
+```
+#### Melakukan penambahan kolum untuk mengganti fungsi awal id_sumber yaitu penambahan dua kolom baru bernama id_penjualan dan id_pembelian supaya mengetahui secara jelas transaksi penjualan dan pembelian tersebut merujuk ke ID berapa pada tabel asalnya. 
+
+// ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+ 
+### Edit Query (FK)
+```sql
+ALTER TABLE arus_kas
+ADD CONSTRAINT fk_arus_kas_penjualan
+FOREIGN KEY (id_penjualan)
+REFERENCES laporan_penjualan_harian(id_penjualan)
+ON DELETE CASCADE;
+
+ALTER TABLE arus_kas
+ADD CONSTRAINT fk_arus_kas_supplier
+FOREIGN KEY (id_pembelian)
+REFERENCES transaksi_supplier(id_transaksi)
+ON DELETE CASCADE;
+ON UPDATE CASCADE; // setelah trigger
+
+```
+ #### Penambahan query ON DELETE CASCADE bermaksud supaya ketika ada penghapusan data dummy dari tabel asal, data dummy yang tercatat di arus_kas juga turut terhapus.
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+ ## Membuat Tabel Informasi Keuangan (`Informasi_Keuangan`)
+```sql
+CREATE TABLE informasi_keuangan(
+    id_info INT PRIMARY KEY,
+    saldo DECIMAL(10, 2) NOT NULL,
+    tanggal_update DATE NOT NULL DEFAULT CURRENT_DATE
+)ENGINE=INNODB;
+
+```
+#### Untuk menampung informasi akumulatif keuangan dari perusahaan agen.
+ 
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+ ## Membuat Tabel Relasi Transaksi_Supplier (`Transaksi_Supplier`)
+```sql
+CREATE TABLE transaksi_supplier(
+    id_transaksi INT AUTO_INCREMENT PRIMARY KEY,
+    id_shifter VARCHAR(10) NOT NULL,
+    id_kategori VARCHAR(10) NOT NULL,
+    jumlah_barang_dibeli INT,
+    total_transaksi DECIMAL(10, 2),
+    tipe_transaksi ENUM('transfer', 'cash'),
+    tanggal_pembelian DATE NOT NULL DEFAULT CURRENT_DATE
+)ENGINE=INNODB;
+
+```
+#### Sebagai tabel relasi yang menjadi penghubung antara shifter dan kategori terkait pencatatan pembelian yang terjadi dengan supplier.
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
+ ### Edit Query (FK)
+```sql
+ALTER TABLE transaksi_supplier
+ADD CONSTRAINT fk_transaksi_supplier_shifter
+FOREIGN KEY (id_shifter)
+REFERENCES seller(id_shifter);
+
+ALTER TABLE transaksi_supplier
+ADD CONSTRAINT fk_transaksi_supplier_kategori
+FOREIGN KEY (id_kategori)
+REFERENCES kategori(id_kategori);
+
+```
+#### Guna menghubungkan id_shifter dan id_kategori ke dua tabel entitas, dilakukan Alter Table untuk menghubungkan foreign key ke id_shifter dari tabel seller dan id_kategori yang berasal dari tabel kategori.
+
+ // ini format gambarnya
+ ![alt text](/Folder/nama-gambar.png) 
+
 
 ## 5. Pengisian Data Dummy ke dalam Setiap Tabel
 ### a. Pengisian Data Dummy ke Tabel seller
